@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
 #$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-#require 'madrox-cluster/server'
-require 'madrox-cluster'
+require 'madrox-cluster/server'
 
 hostname = "127.0.0.1"
 port = ARGV[0] || 2000
