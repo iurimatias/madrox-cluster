@@ -26,6 +26,15 @@ module Madrox
     #@@hosts.sample
   end
 
+  def self.register(reference, code)
+    host = self.get_next_free_host
+    connection = TCPSocket.new(host[:hostname], host[:port]) 
+
+    package = {type: "register", reference: reference, code: code.to_source}.to_json
+
+    connection.sendmsg package
+  end
+
   def self.execute(&block)
     host = self.get_next_free_host
     connection = TCPSocket.new(host[:hostname], host[:port]) 
@@ -47,42 +56,8 @@ module Madrox
   end
 
   def self.each(array, options = {}, &block)
-    array = array.to_a # force Enumerables into an Array
-
-    #create connections first to avoid race conditions
-    #NOTE: perhaps connections can be reused..., with concurrency this can be
-    #tricky..
-    connections = array.collect do |x|
-      host = self.get_next_free_host
-      TCPSocket.new(host[:hostname], host[:port]) 
-    end
-
-    res = Parallel.each_with_index(array, :in_threads => array.size) do |x, index|
-      #TODO: ideal would be to delay this until there is a 'free' server
-      connection = connections[index]
-
-      begin
-        package = {type: "execute", code: block.to_source, args: [x]}.to_json
-
-        connection.sendmsg package # + "|||"
-      rescue
-        puts "error: retrying.."
-        retry
-      end
-
-      puts "finished sending msg"
-      result = ""
-      if line = connection.gets
-        result << line
-        puts "received #{line.chop}"
-      end
-
-      connection.close
-      puts "finished receiving msg"
-      eval(result.chop)
-    end
-
-    res
+    self.collect(array, options, &block)
+    nil
   end
 
   def self.map(array, options={}, &block)

@@ -8,34 +8,26 @@ require 'pry'
 module Madrox
   module ServerHandler
     def post_init
-      #send_data "free"
+      port, ip = Socket.unpack_sockaddr_in(self.get_peername)
+      puts "#{ip} has connected"
     end
 
-    #possible calls
-    # execute
-    # register
+    def register(reference, code)
+      eval("#{reference} = #{code}.call()")
+    end
 
-    #TODO: make this non blockable
-    def receive_data data
-      #send_data "busy"
-      packages = data.split("|||")
-      puts "got"
-      puts packages
-      packages.each do |package|
-        #Thread.new {
-          #binding.pry
-          data = JSON.parse(package)
+    def receive_data package
+      Thread.new {
+        data = JSON.parse(package)
+        case data["type"]
+        when "register"
+          register(data["reference"], data["code"])
+        when "execute"
           args = data["args"].size == 1 ? data["args"].first : data["args"]
           result = eval(data["code"]).call(args)
-          puts result
           send_data result.to_s + "\n"
-          puts "sending msg... #{result}"
-        #}
-      end
-    end
-
-    def unbind
-      puts "-- someone disconnected from the echo server!"
+        end
+      }
     end
   end
 
