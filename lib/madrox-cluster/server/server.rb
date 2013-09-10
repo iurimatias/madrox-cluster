@@ -5,6 +5,9 @@ require 'json'
 require 'parallel'
 require 'pry'
 
+require 'madrox-cluster/json_builder'
+require 'madrox-cluster/server/server_handler'
+
 module Madrox
 
   class Server

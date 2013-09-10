@@ -6,6 +6,9 @@ require 'parallel'
 require 'pry'
 
 require "madrox-cluster/version"
+require "madrox-cluster/host"
+require "madrox-cluster/hosts_manager"
+require "madrox-cluster/json_builder"
 
 module Madrox
 
@@ -36,13 +39,15 @@ module Madrox
   def self.collect(array, options = {}, &block)
     array = array.to_a # force Enumerables into an Array
 
-    connections = HostsManagers.get_free_hosts(array.size)
+    connections = HostsManager.get_free_hosts(array.size)
 
     #map only x-available servers, loop until all is complete
-    collection = Parallel.map_with_index(array, :in_threads => array.size) do |x, index|
+    #collection = Parallel.map_with_index(array, :in_threads => array.size) do |x, index|
+    collection = array.each_with_index do |x, index|
       #TODO: ideal would be to delay this until there is a 'free' server
+      puts "index is #{index}"
       connection = connections[index]
-
+      
       result = connection.send JsonPackage.execute(block, [x])
 
       eval(result)

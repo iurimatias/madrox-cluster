@@ -9,5 +9,10 @@ module Madrox
       {:type => "execute", :code => block.to_source, :args => args}.to_json
     end
 
+    def self.parse(package)
+      json = JSON.parse(package)
+      OpenStruct.new(json)
+    end
+
   end
 end

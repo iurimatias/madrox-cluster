@@ -10,19 +10,22 @@ module Madrox
 
     def connect
       @connection = TCPSocket.new(@hostname, @port)
+    rescue Errno::ECONNREFUSED => e
+      puts "problem connecting to #{@hostname}:#{@port}"
+      #TODO: get another connection instead
+      exit
     end
 
     def send(package, should_get_reply=true)
-      @connection.connect
+      connect
       @connection.sendmsg package #add \n
 
-      result = should_get_reply ? @connection.gets : nil
+      result = should_get_reply ? @connection.gets.chop : nil
 
       close_connection
-      result.chop
-    rescue
-      puts "error: retrying.."
-      retry
+      result
+    #rescue
+    #  retry
     end
 
     def close_connection

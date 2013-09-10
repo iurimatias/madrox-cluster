@@ -20,8 +20,10 @@ module Madrox
     #and the client knows what result it corresponds to
 
     def receive_data(package)
-      Thread.new do
+      #Thread.new do
         data = JsonPackage.parse(package)
+        puts "-----"
+        puts data
         case data.type
         when "register"
           register(data.reference, data.code)
@@ -29,7 +31,7 @@ module Madrox
           result = execute(data.code, data.args)
           send_data result.to_s + "\n"
         end
-      end
+      #end
     end
 
   end

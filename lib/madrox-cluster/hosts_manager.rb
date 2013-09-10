@@ -1,7 +1,7 @@
 module Madrox
   class HostsManager
 
-    def self.add_hosts(host)
+    def self.add_hosts(host_list)
       host_list.each do |host|
         hostname, port = host.split(":")
         add_host(hostname, port)
@@ -25,7 +25,7 @@ module Madrox
       #create connections first to avoid race conditions
       #NOTE: perhaps connections can be reused..., with concurrency this can be
       #tricky..
-      connections = num.times do |x|
+      connections = (1..num).collect do |x|
         host = self.get_next_free_host
         host.connect
         host
