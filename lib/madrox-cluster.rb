@@ -10,49 +10,18 @@ require "madrox-cluster/version"
 module Madrox
 
   def self.config(host_list)
-    @@hosts = host_list.collect do |host|
-      hostname, port = host.split(":")
-      puts "connecting to #{hostname}:#{port}"
-
-      {jobs: 0, hostname: hostname, port: port}
-    end
-  end
-
-  def self.get_next_free_host
-    #@@hosts.find { |h| h[:status] == "free" }
-    server = @@hosts.min_by { |h| h[:jobs] }
-    server[:jobs] += 1
-    server
-    #@@hosts.sample
+    HostsManager.add_hosts(host_list)
   end
 
   def self.register(reference, code)
-    host = self.get_next_free_host
-    connection = TCPSocket.new(host[:hostname], host[:port]) 
-
-    package = {type: "register", reference: reference, code: code.to_source}.to_json
-
-    connection.sendmsg package
+    host = HostsManager.get_next_free_host
+    host.send JsonPackage.register(reference, code), false
   end
 
   def self.execute(&block)
-    host = self.get_next_free_host
-    connection = TCPSocket.new(host[:hostname], host[:port]) 
-
-    package = {type: "execute", code: block.to_source, args: []}.to_json
-
-    connection.sendmsg package
-
-    puts "finished sending msg"
-    result = ""
-    if line = connection.gets
-      result << line
-      puts "received #{line.chop}"
-    end
-
-    connection.close
-    puts "finished receiving msg"
-    eval(result.chop)
+    host = HostsManager.get_next_free_host
+    result = host.send JsonPackage.execute(block)
+    eval(result)
   end
 
   def self.each(array, options = {}, &block)
@@ -67,41 +36,19 @@ module Madrox
   def self.collect(array, options = {}, &block)
     array = array.to_a # force Enumerables into an Array
 
-    #create connections first to avoid race conditions
-    #NOTE: perhaps connections can be reused..., with concurrency this can be
-    #tricky..
-    connections = array.collect do |x|
-      host = self.get_next_free_host
-      TCPSocket.new(host[:hostname], host[:port]) 
-    end
+    connections = HostsManagers.get_free_hosts(array.size)
 
     #map only x-available servers, loop until all is complete
-    res = Parallel.map_with_index(array, :in_threads => array.size) do |x, index|
+    collection = Parallel.map_with_index(array, :in_threads => array.size) do |x, index|
       #TODO: ideal would be to delay this until there is a 'free' server
       connection = connections[index]
 
-      begin
-        package = {type: "execute", code: block.to_source, args: [x]}.to_json
+      result = connection.send JsonPackage.execute(block, [x])
 
-        connection.sendmsg package # + "|||"
-      rescue
-        puts "error: retrying.."
-        retry
-      end
-
-      puts "finished sending msg"
-      result = ""
-      if line = connection.gets
-        result << line
-        puts "received #{line.chop}"
-      end
-
-      connection.close
-      puts "finished receiving msg"
-      eval(result.chop)
+      eval(result)
     end
 
-    res
+    collection
   end
 
 end
