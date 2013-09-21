@@ -23,8 +23,9 @@ module Madrox
 
   def self.execute(&block)
     host = HostsManager.get_next_free_host
-    result = host.send JsonPackage.execute(block)
-    eval(result)
+    response = host.send JsonPackage.execute(block)
+    result = JsonPackage.parse(response)
+    eval(result.result.to_s)
   end
 
   def self.each(array, options = {}, &block)
@@ -42,15 +43,15 @@ module Madrox
     connections = HostsManager.get_free_hosts(array.size)
 
     #map only x-available servers, loop until all is complete
-    #collection = Parallel.map_with_index(array, :in_threads => array.size) do |x, index|
-    collection = array.each_with_index do |x, index|
+    collection = Parallel.map_with_index(array, :in_threads => array.size) do |x, index|
+    #collection = array.each_with_index do |x, index|
       #TODO: ideal would be to delay this until there is a 'free' server
-      puts "index is #{index}"
       connection = connections[index]
       
-      result = connection.send JsonPackage.execute(block, [x])
+      response = connection.send JsonPackage.execute(block, [x])
+      result = JsonPackage.parse(response)
 
-      eval(result)
+      eval(result.result.to_s)
     end
 
     collection

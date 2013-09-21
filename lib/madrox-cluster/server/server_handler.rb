@@ -12,12 +12,9 @@ module Madrox
 
     def execute(code, args)
       args = args.first if args.size == 1
-      eval(code).call(args)
+      result = eval(code).call(args)
+      JsonPackage.result(result)
     end
-
-    #TODO: note, perhaps response should come in a json response as well
-    #it could have a 'reference' number, so the connection can be reused
-    #and the client knows what result it corresponds to
 
     def receive_data(package)
       #Thread.new do
