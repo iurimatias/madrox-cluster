@@ -13,7 +13,7 @@ Usage
 ###Starting a Server
 
 ```Bash
-madrox 5000
+madrox 127.0.0.1 5000
 ```
 
 ###Adding servers
