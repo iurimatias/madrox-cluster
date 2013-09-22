@@ -7,6 +7,7 @@ module Madrox
       @threads   = []
       @block     = block
       @semaphore = Mutex.new
+      @index = -1
     end
 
     def execute
@@ -20,32 +21,37 @@ module Madrox
 
     def execute_jobs
       connections = HostsManager.get_free_hosts
-      initial_jobs = @job_queue.pop connections.count
+      initial_jobs = @job_queue.shift connections.count
 
       initial_jobs.each_with_index do |value, index|
-        execute_job(connections[index], value)
+        @semaphore.lock
+        @index += 1
+        @semaphore.unlock
+        execute_job(connections[index], value, index)
       end
     end
 
-    def execute_job(connection, value)
+    def execute_job(connection, value, index)
       @threads << Thread.new {
         response = connection.send JsonPackage.execute(@block, [value])
         result = JsonPackage.parse(response)
 
         execute_next_job
         res = eval(result.result.to_s)
-        @result << res
+        @result[index] = res
       }
     end
 
     def execute_next_job
       @semaphore.lock
       connection = HostsManager.get_next_free_host
-      value = @job_queue.pop
+      value = @job_queue.shift
+      @index += 1
+      index = @index
       @semaphore.unlock
 
       return if value.nil?
-      execute_job(connection, value)
+      execute_job(connection, value, index)
     end
 
   end
