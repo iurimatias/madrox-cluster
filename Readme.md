@@ -1,4 +1,8 @@
+Madrox [![Code Climate](https://codeclimate.com/github/iurimatias/madrox-cluster.png)](https://codeclimate.com/github/iurimatias/madrox-cluster)
+======
+
 Easily distribute any code across multiple servers
+
 
 Under Development
 =======
