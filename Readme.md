@@ -1,4 +1,4 @@
-Easily distribute any code in multiple servers.
+Easily distribute any code across multiple servers
 
 Install
 =======
@@ -27,7 +27,7 @@ Madrox.config(["server_1:5000", "server_1:5001", "server_2:5000", "server_2:5001
 
 
 ```Ruby
-#Distribute processing through the servers
+#Distribute processing across the servers
 result = Madrox.collect([35, 30, 35, 37, 25, 30]) do |x|
   def fib(n)
     n<=1 ? n : fib(n-2) + fib(n-1)
