@@ -2,7 +2,6 @@ require 'sourcify'
 require 'socket'
 require 'eventmachine'
 require 'json'
-require 'parallel'
 require 'pry'
 
 require "madrox-cluster/version"

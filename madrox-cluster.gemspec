@@ -25,6 +25,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'file-tail' 
   s.add_runtime_dependency 'sourcify'
   s.add_runtime_dependency 'eventmachine'
-  s.add_runtime_dependency 'parallel'
 
 end
