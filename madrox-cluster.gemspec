@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version     = Madrox::VERSION
   s.authors     = ["Iuri Matias"]
   s.email       = ["iuri.matias@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{Write a gem summary}
-  s.description = %q{Write a gem description}
+  s.homepage    = "https://github.com/iurimatias/madrox-cluster"
+  s.summary     = %q{Straightforward distributed computing in ruby}
+  s.description = %q{Easily distribute any code in multiple servers}
 
   s.rubyforge_project = "madrox-cluster"
 
