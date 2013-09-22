@@ -18,8 +18,7 @@ module Madrox
   end
 
   def self.register(reference, code)
-    host = HostsManager.get_next_free_host
-    host.send JsonPackage.register(reference, code), false
+    HostsManager.send_to_all JsonPackage.register(reference, code)
   end
 
   def self.execute(&block)
@@ -42,7 +41,6 @@ module Madrox
     workers = Workers.new(array, block)
     result  = workers.execute
     
-    #close connections
     return result
   end
 

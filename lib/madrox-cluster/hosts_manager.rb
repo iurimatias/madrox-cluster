@@ -21,6 +21,10 @@ module Madrox
       @@hosts.select { |host| host.jobs == 0 }
     end
 
+    def self.send_to_all(payload)
+      @@hosts.each { |host| host.send payload, false }
+    end
+
     def self.close_connections
       @@hosts.map(&:close_connection)
     end
