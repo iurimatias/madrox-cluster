@@ -13,7 +13,6 @@ module Madrox
   class Server
     def self.start(hostname, port=2000)
       puts "starting server on #{hostname}:#{port}"
-      puts "WARNING: Madrox is still under development! expect glitches!"
       EventMachine.run {
         EventMachine.start_server hostname, port, ServerHandler
       }

@@ -3,12 +3,6 @@ Madrox [![Code Climate](https://codeclimate.com/github/iurimatias/madrox-cluster
 
 Easily distribute any code across multiple servers
 
-
-Under Development
-=======
-
-Please note this is still under development
-
 Install
 =======
 
