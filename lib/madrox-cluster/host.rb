@@ -6,6 +6,7 @@ module Madrox
       @hostname = hostname
       @port     = port
       @jobs     = 0
+      @semaphore = Mutex.new
     end
 
     def connect
@@ -15,12 +16,14 @@ module Madrox
     end
 
     def send(package, should_get_reply=true)
+      @semaphore.lock
       connect
       @jobs += 1
       @connection.sendmsg package #add \n
 
       result = should_get_reply ? @connection.gets.chop : nil
       @jobs -= 1
+      @semaphore.unlock
 
       result
     #rescue

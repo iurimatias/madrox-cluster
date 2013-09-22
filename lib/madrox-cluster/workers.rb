@@ -36,9 +36,9 @@ module Madrox
         response = connection.send JsonPackage.execute(@block, [value])
         result = JsonPackage.parse(response)
 
-        execute_next_job
         res = eval(result.result.to_s)
         @result[index] = res
+        execute_next_job
       }
     end
 
