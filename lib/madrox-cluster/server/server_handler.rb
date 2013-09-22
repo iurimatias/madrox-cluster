@@ -17,7 +17,7 @@ module Madrox
     end
 
     def receive_data(package)
-      #Thread.new do
+      Thread.new do
         data = JsonPackage.parse(package)
         puts "-----"
         puts data
@@ -28,7 +28,7 @@ module Madrox
           result = execute(data.code, data.args)
           send_data result.to_s + "\n"
         end
-      #end
+      end
     end
 
   end

@@ -1,6 +1,6 @@
 module Madrox
   class Host
-    attr_accessor :jobs
+    attr_accessor :jobs, :connection
 
     def initialize(hostname, port)
       @hostname = hostname
@@ -18,11 +18,13 @@ module Madrox
 
     def send(package, should_get_reply=true)
       connect
+      @jobs += 1
       @connection.sendmsg package #add \n
 
       result = should_get_reply ? @connection.gets.chop : nil
+      @jobs -= 1
 
-      close_connection
+      #close_connection
       result
     #rescue
     #  retry
@@ -31,6 +33,6 @@ module Madrox
     def close_connection
       @connection.close
     end
-    
+
   end
 end
