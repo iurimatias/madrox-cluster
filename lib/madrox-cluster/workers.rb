@@ -10,23 +10,26 @@ module Madrox
     end
 
     def execute
+      execute_jobs
+      @threads.map(&:join) #wait for all threads to finish
+      HostsManager.close_connections
+      @result
+    end
+
+    private
+
+    def execute_jobs
       connections = HostsManager.get_free_hosts
       initial_jobs = @job_queue.pop connections.count
 
       initial_jobs.each_with_index do |value, index|
-        res = execute_job(connections[index], value, @block)
+        execute_job(connections[index], value)
       end
-
-      @threads.map(&:join)
-
-      HostsManager.close_connections
-
-      @result
     end
 
-    def execute_job(connection, x, block)
+    def execute_job(connection, value)
       @threads << Thread.new {
-        response = connection.send JsonPackage.execute(block, [x])
+        response = connection.send JsonPackage.execute(@block, [value])
         result = JsonPackage.parse(response)
 
         execute_next_job
@@ -40,8 +43,9 @@ module Madrox
       connection = HostsManager.get_next_free_host
       value = @job_queue.pop
       @semaphore.unlock
+
       return if value.nil?
-      execute_job(connection, value, @block)
+      execute_job(connection, value)
     end
 
   end
