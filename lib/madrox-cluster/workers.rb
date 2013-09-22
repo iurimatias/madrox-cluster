@@ -19,6 +19,8 @@ module Madrox
 
       @threads.map(&:join)
 
+      HostsManager.close_connections
+
       @result
     end
 

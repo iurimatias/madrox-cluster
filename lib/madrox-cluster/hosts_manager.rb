@@ -21,5 +21,9 @@ module Madrox
       @@hosts.select { |host| host.jobs == 0 }
     end
 
+    def self.close_connections
+      @@hosts.map(&:close_connection)
+    end
+
   end
 end
