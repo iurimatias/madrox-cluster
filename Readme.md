@@ -83,3 +83,5 @@ Disclaimer
 This gem is provided as is - therefore, the creators and contributors of this gem are not responsible for any damages that may result from its usage. Although Authentication and SSL may be added later, Madrox is experimental and is meant to be used in private trusted local networks. Use at your own risk.
 
 Madrox is an experiment. For a more solid solution please check [dRuby](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/drb/rdoc/DRb.html)
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/iurimatias/madrox-cluster/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
