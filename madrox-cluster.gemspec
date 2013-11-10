@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
 
   # specify any dependencies here; for example:
   s.add_development_dependency "pry"
+  s.add_development_dependency "rspec"
 
   s.add_runtime_dependency 'ruby_parser'
   s.add_runtime_dependency 'file-tail' 
